@@ -1,0 +1,3 @@
+504B0304140000000800... (contoh konten file ZIP dalam format hex)  
+
+Catatan: File `mystery.txt` sebenarnya adalah file ZIP yang berisi flag dalam file `flag.txt`. Peserta perlu mengidentifikasi jenis file yang benar dan mengekstrak flag-nya.

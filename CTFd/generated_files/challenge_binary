@@ -1,0 +1,35 @@
+[Binary ELF file content here]  
+
+Deskripsi Tantangan:  
+Binary ini adalah hasil kompilasi dari program C sederhana yang telah di-obfuscate. Tugas Anda adalah melakukan reverse engineering terhadap binary tersebut untuk menemukan flag yang tersembunyi. Flag ini berada dalam string yang telah di-obfuscate di dalam fungsi `main`. Gunakan tools seperti Ghidra atau IDA untuk menganalisis dan mendekompilasi binary.  
+
+Contoh Kode C yang Dikompilasi:  
+```c
+#include <stdio.h>
+#include <string.h>
+
+void obfuscate(char *str) {
+    for (int i = 0; i < strlen(str); i++) {
+        str[i] = str[i] ^ 0x1A;
+    }
+}
+
+int main() {
+    char flag[] = "ek`fzq~|m`k`b`q`o`rs";
+    obfuscate(flag);
+    printf("Flag: %s\n", flag);
+    return 0;
+}
+```
+
+Instruksi:  
+1. Unduh binary ELF yang disediakan.  
+2. Gunakan Ghidra atau IDA untuk menganalisis binary.  
+3. Temukan fungsi `main` dan lihat string yang di-obfuscate.  
+4. Dekode string tersebut untuk mendapatkan flag.  
+
+Flag:  
+PolinesCTF{reverse_elf_is_fun}  
+
+Catatan:  
+File binary ELF yang sebenarnya akan diberikan saat kompetisi berlangsung. Pastikan untuk menggunakan tools yang tepat untuk menganalisis dan menemukan flag yang tersembunyi.

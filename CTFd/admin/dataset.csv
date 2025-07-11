@@ -1,0 +1,3 @@
+kategori,topik,soal,hint,jawaban,tingkat,nilai
+crypto,Caesar Cipher,Decode pesan dengan Caesar...,Gunakan tools Caesar decoder,PolinesCTF{abcxyz},easy,50
+web,XSS sederhana,Terdapat form pencarian...,Coba masukkan tag script sederhana,PolinesCTF{alert(1)},medium,100

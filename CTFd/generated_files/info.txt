@@ -1,0 +1,6 @@
+```
+Nama: John Doe  
+Email: john.doe@example.com  
+Flag: PolinesCTF{hidden_flag}  
+Telepon: 123-456-7890  
+```

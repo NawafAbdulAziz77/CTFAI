@@ -1,0 +1,38 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="jumbotron">
+  <div class="container">
+    <h1>📜 Semua History Soal AI</h1>
+    <a href="{{ url_for('admin.generate') }}" class="btn btn-secondary mt-3">⬅ Kembali ke Generator</a>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <a href="{{ url_for('admin.export_generate_history_excel') }}" class="btn btn-success mb-3">
+    💾 Download Excel
+</a>
+  {% if history %}
+    <ul class="list-group mt-4">
+      {% for item in history %}
+        <li class="list-group-item mb-3">
+          <strong>{{ item.kategori }}</strong> — {{ item.created_at.strftime('%Y-%m-%d %H:%M:%S') }}<br>
+          {% if item.duration is not none %}
+            <small class="text-muted">⏱ Waktu generate: {{ item.duration | round(2) }} detik</small><br>
+          {% else %}
+            <small class="text-muted text-warning">⏱ Waktu generate tidak tersedia</small><br>
+          {% endif %}
+          <pre style="white-space: pre-wrap;">{{ item.response }}</pre>
+          {% if item.filename %}
+            <a href="{{ url_for('admin.admin_download_file', filename=item.filename) }}" class="btn btn-sm btn-outline-success mt-2" download>
+              ⬇ Unduh {{ item.filename }}
+            </a>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>Tidak ada history tersedia.</p>
+  {% endif %}
+</div>
+{% endblock %}

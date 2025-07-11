@@ -17,6 +17,8 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 COPY . /opt/CTFd
 
+RUN pip install pandas
+RUN pip install openpyxl
 RUN pip install --no-cache-dir -r requirements.txt \
     && for d in CTFd/plugins/*; do \
         if [ -f "$d/requirements.txt" ]; then \

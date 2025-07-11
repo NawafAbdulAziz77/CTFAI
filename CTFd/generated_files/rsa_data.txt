@@ -1,0 +1,15 @@
+n = 3233  
+e = 17  
+c = 2790  
+
+Flag: PolinesCTF{pesan_rahasia}  
+
+Cara Penyelesaian:  
+1. Baca nilai `n`, `e`, dan `c` dari file `rsa_data.txt`.  
+2. Faktorisasi modulus `n = 3233` menjadi `p = 61` dan `q = 53`.  
+3. Hitung nilai totient `φ(n) = (p-1)*(q-1) = 3120`.  
+4. Hitung private key `d` menggunakan persamaan `d ≡ e^(-1) mod φ(n)`. Dalam kasus ini, `d = 2753`.  
+5. Dekripsi ciphertext `c` menggunakan rumus `m ≡ c^d mod n`. Hasilnya adalah `m = 65`.  
+6. Konversi `m` ke karakter ASCII untuk mendapatkan pesan asli.  
+
+Flag: PolinesCTF{A}

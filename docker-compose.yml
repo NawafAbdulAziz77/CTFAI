@@ -18,6 +18,7 @@ services:
       - .data/CTFd/logs:/var/log/CTFd
       - .data/CTFd/uploads:/var/uploads
       - .:/opt/CTFd:ro
+      - ./CTFd/generated_files:/opt/CTFd/CTFd/generated_files
     depends_on:
       - db
     networks:

@@ -15,7 +15,7 @@ from flask import (
     url_for,
 )
 
-admin = Blueprint("admin", __name__)
+admin = Blueprint("admin", __name__, template_folder="templates", static_folder="static")
 
 # isort:imports-firstparty
 from CTFd.admin import challenges  # noqa: F401,I001
@@ -26,6 +26,7 @@ from CTFd.admin import statistics  # noqa: F401,I001
 from CTFd.admin import submissions  # noqa: F401,I001
 from CTFd.admin import teams  # noqa: F401,I001
 from CTFd.admin import users  # noqa: F401,I001
+from CTFd.admin import generator
 from CTFd.cache import (
     cache,
     clear_all_team_sessions,

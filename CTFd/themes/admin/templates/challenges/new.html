@@ -1,114 +1,123 @@
 {% extends "admin/base.html" %}
 
-{% block stylesheets %}
-{% endblock %}
-
 {% block content %}
 <div class="jumbotron">
-	<div class="container">
-		<h1>Create Challenge</h1>
-	</div>
+  <div class="container">
+    <h1>Create Challenge</h1>
+  </div>
 </div>
 
-<div class="modal fade bd-example-modal-lg" role="dialog" id="challenge-create-options">
-	<div class="modal-dialog modal-lg">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title">Options</h5>
-				<button type="button" class="close" data-dismiss="modal">
-					<span>&times;</span>
-				</button>
-			</div>
-			<div class="modal-body">
-				<form method="POST" enctype="multipart/form-data">
-					<div class="form-group">
-						<div class="row">
-							<div class="col-md-8">
-								<label>
-									Flag:<br>
-									<small class="form-text text-muted">Static flag for your challenge</small>
-								</label>
-								<input type="text" class="form-control" name="flag">
-							</div>
-							<div class="col-md-4">
-								<label>
-									&nbsp;
-									<small class="form-text text-muted">&nbsp;</small>
-								</label>
-								<select class="form-control custom-select w-100" name="flag_data">
-									<option value="">Case Sensitive</option>
-									<option value="case_insensitive">Case Insensitive</option>
-								</select>
-							</div>
-						</div>
-						<input type="hidden" name="flag_type" value="static">
-					</div>
-					<div class="form-group">
-						<div class="form-group">
-							<label>
-								Files:
-								<small class="form-text text-muted">Files distributed along with your challenge</small>
-							</label>
-							<input class="form-control-file" type="file" name="file" multiple="multiple">
-							<sub class="text-muted">Attach multiple files using Control+Click or Cmd+Click</sub>
-						</div>
-					</div>
-					<div class="form-group">
-						<label>
-							State<br>
-							<small class="form-text text-muted">Should the challenge be visible to users</small>
-						</label>
-						<select class="form-control custom-select" name="state">
-							<option value="visible">Visible</option>
-							<option value="hidden" selected>Hidden</option>
-						</select>
-					</div>
-					<input id="challenge_id" type="hidden" name="challenge_id">
-					<div class="form-group">
-						<button class="btn btn-primary float-right create-challenge-submit" type="submit">Finish</button>
-					</div>
-				</form>
-			</div>
-		</div>
-	</div>
+<!-- Modal Riwayat Soal AI -->
+<div class="modal fade" id="aiHistoryModal" tabindex="-1" role="dialog" aria-labelledby="aiHistoryModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="aiHistoryModalLabel">Riwayat Soal AI</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="ai-history-content">
+        <p>Loading...</p>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="container-fluid">
-	<div class="row">
-		<div class="col-md-3 offset-md-1">
-			<h5 class="text-center pb-3">
-				Challenge Types
-			</h5>
-			<div id="create-chals-select">
-				{% for type in types %}
-				<label class="w-100">
-					<input type="radio" name="type" class="card-radio d-none" value="{{ type }}" {% if type == "standard" %}checked{% endif %}/>
-					<div class="card rounded-0">
-						<div class="card-body">
-							<span class="card-title">
-								<div class="form-check">
-									<input class="form-check-input card-radio-clone" type="radio" style="visibility: hidden;" checked>
-									<span class="form-check-label">{{ type }}</span>
-								</div>
-							</span>
-						</div>
-					</div>
-				</label>
-				{% endfor %}
-			</div>
-		</div>
-		<div class="col-md-7">
-			<div id="create-chal-entry-div">
-			</div>
-		</div>
-	</div>
-</div>
+  <div class="row">
+    <div class="col-md-3 offset-md-1">
+      <h5 class="text-center pb-3">Challenge Types</h5>
+      <div id="create-chals-select">
+        {% for type in types %}
+        <label class="w-100">
+          <input type="radio" name="type" class="card-radio d-none" value="{{ type }}" {% if type == "standard" %}checked{% endif %}/>
+          <div class="card rounded-0">
+            <div class="card-body">
+              <span class="card-title">
+                <div class="form-check">
+                  <input class="form-check-input card-radio-clone" type="radio" style="visibility: hidden;" checked>
+                  <span class="form-check-label">{{ type }}</span>
+                </div>
+              </span>
+            </div>
+          </div>
+        </label>
+        {% endfor %}
+      </div>
 
+      <!-- Tombol Trigger Modal -->
+      <button class="btn btn-warning mt-3" data-toggle="modal" data-target="#aiHistoryModal">
+        📋 Lihat Soal Generate AI
+      </button>
+    </div>
+
+    <div class="col-md-7">
+      <div id="create-chal-entry-div"></div>
+    </div>
+  </div>
+</div>
 {% endblock %}
 
+
 {% block scripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function () {
+  $('#aiHistoryModal').on('show.bs.modal', function () {
+    // Tampilkan loading saat modal dibuka
+    $('#ai-history-content').html('<p>Loading...</p>');
+
+    // AJAX untuk mengambil data history dari backend
+    $.ajax({
+      url: "/admin/generate/history/json",
+      method: "GET",
+      dataType: "json",
+      success: function (data) {
+        // Cek apakah data dalam bentuk array
+        if (!Array.isArray(data)) {
+          $('#ai-history-content').html('<p class="text-danger">Format data tidak valid.</p>');
+          return;
+        }
+
+        // Jika data kosong
+        if (data.length === 0) {
+          $('#ai-history-content').html('<p class="text-muted">Belum ada soal yang di-generate.</p>');
+          return;
+        }
+
+        // Bangun HTML dari data
+        let html = '';
+        data.forEach(item => {
+          let kategori = item.kategori || 'Tidak Diketahui';
+          let created_at = item.created_at || 'Tidak diketahui';
+          let responseText = item.response || '';
+          let duration = item.duration;
+          let filename = item.filename;
+
+          html += `
+            <div class="border p-3 mb-3 rounded bg-light">
+              <strong>${kategori}</strong> — <em>${created_at}</em><br>
+              <pre style="white-space: pre-wrap;">${responseText.slice(0, 500)}${responseText.length > 500 ? '...' : ''}</pre>
+              ${duration ? `<span class="badge badge-secondary">⏱ ${parseFloat(duration).toFixed(2)} detik</span><br>` : ''}
+              ${filename ? `<a class="btn btn-sm btn-success mt-2" href="/admin/download/${filename}" target="_blank">⬇ Unduh ${filename}</a>` : ''}
+            </div>
+          `;
+        });
+
+        // Tampilkan HTML di modal
+        $('#ai-history-content').html(html);
+      },
+      error: function (xhr) {
+        console.error("AJAX Error:", xhr.status, xhr.responseText);
+        $('#ai-history-content').html('<p class="text-danger">Gagal memuat riwayat soal. Cek console untuk detail.</p>');
+      }
+    });
+  });
+});
+</script>
 {% endblock %}
 
 {% block entrypoint %}
-	{{ Assets.js("assets/js/pages/challenge.js", theme="admin") }}
+{{ Assets.js("assets/js/pages/challenge.js", theme="admin") }}
 {% endblock %}

@@ -3,6 +3,7 @@ Buka terminal di komputermu.
 
 SSH ke server AWS EC2 kamu:
 ssh -i "keypair.pem" ubuntu@<public-ip-ec2>
+
 ✅ LANGKAH 2: Update Sistem dan Install Docker
 
 sudo apt update && sudo apt upgrade -y
@@ -13,6 +14,7 @@ Verifikasi instalasi Docker:
 
 docker --version
 docker-compose --version
+
 ✅ LANGKAH 3: Clone Repository CTFd
 cd /home/ubuntu
 git clone https://github.com/NawafAbdulAziz77/CTFAI.git
@@ -20,6 +22,7 @@ cd CTFAI
 Jika kamu mendapatkan error seperti Permission denied, jalankan:
 
 sudo chown -R ubuntu:ubuntu /home/ubuntu/CTFAI
+
 ✅ LANGKAH 4: Jalankan Docker Compose
 Pastikan file docker-compose.yml sudah ada di repo kamu. Jalankan:
 
@@ -27,6 +30,7 @@ sudo docker compose up -d
 Atau jika pakai versi lama:
 
 sudo docker-compose up -d
+
 ✅ LANGKAH 5: Buka Akses Port di AWS
 Masuk ke AWS EC2 → Instances → Pilih instance kamu.
 

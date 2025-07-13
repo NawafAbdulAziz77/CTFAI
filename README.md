@@ -1,90 +1,92 @@
-# ![](https://github.com/CTFd/CTFd/blob/master/CTFd/themes/core/static/img/logo.png?raw=true)
+✅ LANGKAH 1: Login ke EC2 Instance
+Buka terminal di komputermu.
 
-![CTFd MySQL CI](https://github.com/CTFd/CTFd/workflows/CTFd%20MySQL%20CI/badge.svg?branch=master)
-![Linting](https://github.com/CTFd/CTFd/workflows/Linting/badge.svg?branch=master)
-[![MajorLeagueCyber Discourse](https://img.shields.io/discourse/status?server=https%3A%2F%2Fcommunity.majorleaguecyber.org%2F)](https://community.majorleaguecyber.org/)
-[![Documentation Status](https://api.netlify.com/api/v1/badges/6d10883a-77bb-45c1-a003-22ce1284190e/deploy-status)](https://docs.ctfd.io)
+SSH ke server AWS EC2 kamu:
+ssh -i "keypair.pem" ubuntu@<public-ip-ec2>
+✅ LANGKAH 2: Update Sistem dan Install Docker
 
-## What is CTFd?
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y docker.io docker-compose git
+sudo systemctl enable docker
+sudo systemctl start docker
+Verifikasi instalasi Docker:
 
-CTFd is a Capture The Flag framework focusing on ease of use and customizability. It comes with everything you need to run a CTF and it's easy to customize with plugins and themes.
+docker --version
+docker-compose --version
+✅ LANGKAH 3: Clone Repository CTFd
+cd /home/ubuntu
+git clone https://github.com/NawafAbdulAziz77/CTFAI.git
+cd CTFAI
+Jika kamu mendapatkan error seperti Permission denied, jalankan:
 
-![CTFd is a CTF in a can.](https://github.com/CTFd/CTFd/blob/master/CTFd/themes/core/static/img/scoreboard.png?raw=true)
+sudo chown -R ubuntu:ubuntu /home/ubuntu/CTFAI
+✅ LANGKAH 4: Jalankan Docker Compose
+Pastikan file docker-compose.yml sudah ada di repo kamu. Jalankan:
 
-## Features
+sudo docker compose up -d
+Atau jika pakai versi lama:
 
-- Create your own challenges, categories, hints, and flags from the Admin Interface
-  - Dynamic Scoring Challenges
-  - Unlockable challenge support
-  - Challenge plugin architecture to create your own custom challenges
-  - Static & Regex based flags
-    - Custom flag plugins
-  - Unlockable hints
-  - File uploads to the server or an Amazon S3-compatible backend
-  - Limit challenge attempts & hide challenges
-  - Automatic bruteforce protection
-- Individual and Team based competitions
-  - Have users play on their own or form teams to play together
-- Scoreboard with automatic tie resolution
-  - Hide Scores from the public
-  - Freeze Scores at a specific time
-- Scoregraphs comparing the top 10 teams and team progress graphs
-- Markdown content management system
-- SMTP + Mailgun email support
-  - Email confirmation support
-  - Forgot password support
-- Automatic competition starting and ending
-- Team management, hiding, and banning
-- Customize everything using the [plugin](https://docs.ctfd.io/docs/plugins/overview) and [theme](https://docs.ctfd.io/docs/themes/overview) interfaces
-- Importing and Exporting of CTF data for archival
-- And a lot more...
+sudo docker-compose up -d
+✅ LANGKAH 5: Buka Akses Port di AWS
+Masuk ke AWS EC2 → Instances → Pilih instance kamu.
 
-## Install
+Klik Security → Security Groups → Klik nama security group.
 
-1. Install dependencies: `pip install -r requirements.txt`
-   1. You can also use the `prepare.sh` script to install system dependencies using apt.
-2. Modify [CTFd/config.ini](https://github.com/CTFd/CTFd/blob/master/CTFd/config.ini) to your liking.
-3. Use `python serve.py` or `flask run` in a terminal to drop into debug mode.
+Masuk ke tab Inbound Rules → Klik Edit Inbound Rules.
 
-You can use the auto-generated Docker images with the following command:
+Tambahkan rule:
 
-`docker run -p 8000:8000 -it ctfd/ctfd`
+Type: HTTP
 
-Or you can use Docker Compose with the following command from the source repository:
+Port Range: 80
 
-`docker compose up`
+Source: Anywhere (0.0.0.0/0)
 
-Check out the [CTFd docs](https://docs.ctfd.io/) for [deployment options](https://docs.ctfd.io/docs/deployment/installation) and the [Getting Started](https://docs.ctfd.io/tutorials/getting-started/) guide
+Kalau kamu expose port lain, misalnya 8000 atau 8500, tambahkan juga rule untuk port itu.
 
-## Live Demo
+✅ LANGKAH 6: Akses CTFd di Browser
+Buka di browser:
 
-https://demo.ctfd.io/
+http://<public-ip-ec2>
+Jika kamu pakai port custom, misalnya 8500:
 
-## Support
+http://<public-ip-ec2>:8500
 
-To get basic support, you can join the [MajorLeagueCyber Community](https://community.majorleaguecyber.org/): [![MajorLeagueCyber Discourse](https://img.shields.io/discourse/status?server=https%3A%2F%2Fcommunity.majorleaguecyber.org%2F)](https://community.majorleaguecyber.org/)
 
-If you prefer commercial support or have a special project, feel free to [contact us](https://ctfd.io/contact/).
+Keren! ✅ Kamu sudah punya domain ctfai.my.id — itu langkah awal yang sangat bagus.
 
-## Managed Hosting
+Sekarang tinggal menghubungkan domain ke CTFd kamu yang jalan di AWS, dan (opsional) pasang HTTPS biar lebih aman dan terpercaya.
 
-Looking to use CTFd but don't want to deal with managing infrastructure? Check out [the CTFd website](https://ctfd.io/) for managed CTFd deployments.
+🎯 Tujuan
+Membuat http://ctfai.my.id (atau https://ctfai.my.id) mengarah ke CTFd kamu di 13.219.244.166.
 
-## MajorLeagueCyber
+✅ LANGKAH 1: Arahkan Domain ke IP AWS
+Login ke penyedia domain kamu (tempat beli domain ctfai.my.id, misal: Niagahoster, Domainesia, Cloudflare, dsb).
+Cari menu DNS Management / DNS Records / Kelola DNS.
+Tambahkan DNS record berikut:
+Jenis	Host/Name	Value	TTL
+A	@	13.219.244.166	default
+A	www	13.219.244.166	default
 
-CTFd is heavily integrated with [MajorLeagueCyber](https://majorleaguecyber.org/). MajorLeagueCyber (MLC) is a CTF stats tracker that provides event scheduling, team tracking, and single sign on for events.
+📌 Penjelasan:
+@ artinya ctfai.my.id
+www artinya www.ctfai.my.id (opsional)
 
-By registering your CTF event with MajorLeagueCyber users can automatically login, track their individual and team scores, submit writeups, and get notifications of important events.
+✅ LANGKAH 2: Uji Coba Arah Domain
+Tunggu 1–15 menit (tergantung propagasi DNS), lalu di terminal:
+ping ctfai.my.id
+Kalau hasilnya menuju IP 13.219.244.166, berarti sudah sukses.
 
-To integrate with MajorLeagueCyber, simply register an account, create an event, and install the client ID and client secret in the relevant portion in `CTFd/config.py` or in the admin panel:
+Lalu tes juga:
+curl http://ctfai.my.id
+Kalau muncul HTML seperti sebelumnya, berarti domain sudah terhubung ke CTFd!
 
-```python
-OAUTH_CLIENT_ID = None
-OAUTH_CLIENT_SECRET = None
-```
+✅ LANGKAH 3: Update nginx.conf untuk Mengenali Domain
+Edit ./conf/nginx/http.conf, ganti ini:
+nginx
+server_name localhost;
+Menjadi:
+server_name ctfai.my.id;
+Lalu restart nginx:
 
-## Credits
-
-- Logo by [Laura Barbera](http://www.laurabb.com/)
-- Theme by [Christopher Thompson](https://github.com/breadchris)
-- Notification Sound by [Terrence Martin](https://soundcloud.com/tj-martin-composer)
+sudo docker-compose restart nginx

@@ -1,10 +1,12 @@
+version: '3.8'
+
 services:
   ctfd:
     build: .
     user: root
     restart: always
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
     environment:
       - UPLOAD_FOLDER=/var/uploads
       - DATABASE_URL=mysql+pymysql://ctfd:ctfd@db/ctfd
@@ -14,26 +16,19 @@ services:
       - ACCESS_LOG=-
       - ERROR_LOG=-
       - REVERSE_PROXY=true
+      - VIRTUAL_HOST=ctfai.my.id
+      - LETSENCRYPT_HOST=ctfai.my.id
+      - LETSENCRYPT_EMAIL=mzakifauzan77@gmail.com
     volumes:
       - .data/CTFd/logs:/var/log/CTFd
       - .data/CTFd/uploads:/var/uploads
-      - .:/opt/CTFd:ro
+      - .:/opt/CTFd
       - ./CTFd/generated_files:/opt/CTFd/CTFd/generated_files
     depends_on:
       - db
+      - cache
     networks:
-        default:
-        internal:
-
-  nginx:
-    image: nginx:stable
-    restart: always
-    volumes:
-      - ./conf/nginx/http.conf:/etc/nginx/nginx.conf
-    ports:
-      - 80:80
-    depends_on:
-      - ctfd
+      - proxy-tier
 
   db:
     image: mariadb:10.11
@@ -46,20 +41,62 @@ services:
       - MARIADB_AUTO_UPGRADE=1
     volumes:
       - .data/mysql:/var/lib/mysql
+    command: [
+      mysqld,
+      --character-set-server=utf8mb4,
+      --collation-server=utf8mb4_unicode_ci,
+      --wait_timeout=28800,
+      --log-warnings=0
+    ]
     networks:
-        internal:
-    # This command is required to set important mariadb defaults
-    command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci, --wait_timeout=28800, --log-warnings=0]
+      - proxy-tier
 
   cache:
     image: redis:4
     restart: always
     volumes:
-    - .data/redis:/data
+      - .data/redis:/data
     networks:
-        internal:
+      - proxy-tier
+
+  nginx-proxy:
+    image: nginxproxy/nginx-proxy
+    container_name: nginx-proxy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - nginx_certs:/etc/nginx/certs
+      - nginx_vhost:/etc/nginx/vhost.d
+      - nginx_html:/usr/share/nginx/html
+    networks:
+      - proxy-tier
+
+  nginx-letsencrypt:
+    image: nginxproxy/acme-companion
+    container_name: nginx-letsencrypt
+    restart: always
+    environment:
+      - NGINX_PROXY_CONTAINER=nginx-proxy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - nginx_certs:/etc/nginx/certs
+      - nginx_vhost:/etc/nginx/vhost.d
+      - nginx_html:/usr/share/nginx/html
+      - acme:/etc/acme.sh
+    depends_on:
+      - nginx-proxy
+    networks:
+      - proxy-tier
+
+volumes:
+  nginx_certs:
+  nginx_vhost:
+  nginx_html:
+  acme:
 
 networks:
-    default:
-    internal:
-        internal: true
+  proxy-tier:
+    driver: bridge

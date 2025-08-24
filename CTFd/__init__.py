@@ -14,6 +14,7 @@ from jinja2.sandbox import SandboxedEnvironment
 from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.utils import safe_join
 from werkzeug.wsgi import get_host
+from prometheus_flask_exporter import PrometheusMetrics
 
 import CTFd.utils.config
 from CTFd import utils
@@ -182,6 +183,9 @@ def create_app(config="CTFd.config.Config"):
 
         cache.init_app(app)
         app.cache = cache
+        from prometheus_flask_exporter import PrometheusMetrics
+        metrics = PrometheusMetrics(app)
+        app.metrics = metrics
 
         # If we are importing we should pause startup until the import is finished
         while import_in_progress():

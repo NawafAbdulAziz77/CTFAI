@@ -1,0 +1,18 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+
+void hidden_function() {
+    system("/bin/sh");
+}
+
+char flag[] = "CTF{R0p_Ch4llenge_123}";
+
+int main(int argc, char *argv[]) {
+    char buffer[100];
+    strcpy(buffer, argv[1]);
+    printf("Input : %s\n", buffer);
+    hidden_function();
+    return 0;
+}

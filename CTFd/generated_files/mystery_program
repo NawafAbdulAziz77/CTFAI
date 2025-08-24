@@ -1,0 +1,2 @@
+#!/bin/sh
+gdb -q -ex "break main" -ex "run" -ex "x/x 0x<alamat_fungsi>" -ex "quit" ./mystery_program

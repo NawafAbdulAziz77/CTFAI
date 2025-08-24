@@ -1,0 +1,6 @@
+[...]
+HTTP Request:
+GET /flag.txt HTTP/1.1
+Host: flagserver.com
+Content-Disposition: attachment; filename=flag.txt
+[...]

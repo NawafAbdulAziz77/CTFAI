@@ -17,6 +17,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 COPY . /opt/CTFd
 
+RUN pip install prometheus_flask_exporter
 RUN pip install pandas
 RUN pip install openpyxl
 RUN pip install --no-cache-dir -r requirements.txt \

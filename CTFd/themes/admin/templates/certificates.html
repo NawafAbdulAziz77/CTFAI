@@ -1,0 +1,208 @@
+{% extends "admin/base.html" %}
+{% block content %}
+
+<div class="jumbotron mb-3">
+  <div class="container">
+    <h1 class="mb-0">Certificates</h1>
+    <small class="text-muted">Generate & kelola sertifikat</small>
+  </div>
+</div>
+
+{# === FLASH MESSAGES === #}
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="container-fluid px-0">
+      {% for category, message in messages %}
+        <div class="alert alert-{{ 'info' if category in ['message', None] else category }} alert-dismissible fade show"
+             role="alert" style="margin-top:-.25rem; margin-bottom:1rem;">
+          {{ message }}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+{# defaults agar form tetap terisi setelah POST #}
+{% set mode       = request.form.get('mode', 'top') %}
+{% set top_n      = request.form.get('top_n', 10) %}
+{% set threshold  = request.form.get('threshold', 0) %}
+{% set bg_choice  = request.form.get('background_path', '') %}
+{% set bg_manual  = request.form.get('background_manual', '') %}
+{% set def_reason = 'Telah mengikuti dan menyelesaikan Pelatihan Dasar Cybersecurity yang diselenggarakan dengan penuh dedikasi.' %}
+{% set def_extra  = 'Pelatihan ini mencakup pemahaman mendasar tentang keamanan sistem informasi, praktik etis dalam pengujian keamanan, serta strategi pertahanan terhadap ancaman siber.' %}
+{% set reason     = request.form.get('reason', def_reason) %}
+{% set extra_text = request.form.get('extra_text', def_extra) %}
+{% set manual_visible = (bg_choice == '__custom__') %}
+
+<div class="card mb-4">
+  <div class="card-header d-flex align-items-center justify-content-between">
+    <strong>Issue Certificates</strong>
+    <small class="text-muted">Pilih mode, tentukan background, lalu klik Issue</small>
+  </div>
+
+  {# penting: multipart untuk upload file #}
+  <form method="post" action="{{ url_for('admin.admin_certificates') }}" enctype="multipart/form-data">
+    <input type="hidden" name="nonce" value="{{ Session.nonce }}">
+    <div class="card-body">
+
+      <div class="form-row">
+        <div class="form-group col-md-3">
+          <label class="form-label" for="mode">Mode</label>
+          <select id="mode" name="mode" class="form-control">
+            <option value="top"   {% if mode == 'top' %}selected{% endif %}>Top-N</option>
+            <option value="score" {% if mode == 'score' %}selected{% endif %}>Score ≥ Threshold</option>
+          </select>
+        </div>
+
+        <div class="form-group col-md-2">
+          <label class="form-label" for="top_n">Top-N</label>
+          <input id="top_n" type="number" class="form-control" name="top_n" value="{{ top_n }}" min="1">
+        </div>
+
+        <div class="form-group col-md-2">
+          <label class="form-label" for="threshold">Threshold</label>
+          <input id="threshold" type="number" class="form-control" name="threshold" value="{{ threshold }}" min="0">
+        </div>
+
+        <div class="form-group col-md-3">
+          <label class="form-label" for="bg-choice">Background (preset)</label>
+          <select id="bg-choice" name="background_path" class="form-control">
+            <option value="" {% if not bg_choice %}selected{% endif %}>— Tanpa background —</option>
+            <option value="/static/certificates/template.png"
+              {% if bg_choice == '/static/certificates/template.png' %}selected{% endif %}>
+              Template Landscape
+            </option>
+            <option value="/static/certificates/template-portrait.png"
+              {% if bg_choice == '/static/certificates/template-portrait.png' %}selected{% endif %}>
+              Template Portrait
+            </option>
+            <option value="__custom__" {% if manual_visible %}selected{% endif %}>
+              Custom (isi manual)
+            </option>
+          </select>
+          <small class="form-text text-muted mt-1">
+            Pilih “Custom” untuk memakai path sendiri.
+          </small>
+        </div>
+
+        <div id="bg-manual-group" class="form-group col-md-2 {% if not manual_visible %}d-none{% endif %}">
+          <label class="form-label" for="bg-manual">Background (manual)</label>
+          <input id="bg-manual" type="text" class="form-control" name="background_manual"
+                 value="{{ bg_manual }}" placeholder="/static/certificates/template.png"
+                 {% if not manual_visible %}disabled{% endif %}>
+          <small class="form-text text-muted mt-1">
+            Default : /static/certificates/template.png
+          </small>
+        </div>
+      </div>
+
+      {# === UPLOAD BACKGROUND (di atas Reason 1) === #}
+      <div class="form-row mt-2">
+        <div class="form-group col-md-6">
+          <label class="form-label" for="background_file">Upload Background (PNG/JPG/WebP)</label>
+          <input id="background_file" type="file" name="background_file" class="form-control-file"
+                 accept="image/png,image/jpeg,image/webp">
+          <small class="form-text text-muted">
+            Jika Anda meng-upload file, file tersebut akan dipakai & <em>mengganti</em> pilihan preset/custom di atas.
+          </small>
+        </div>
+      </div>
+
+      {# Reason full-width, Extra text full-width — diletakkan setelah upload #}
+      <div class="form-row mt-2">
+        <div class="form-group col-12">
+          <label class="form-label" for="reason">Reason (baris 1)</label>
+          <input id="reason" type="text" class="form-control" name="reason" value="{{ reason }}">
+        </div>
+        <div class="form-group col-12 mt-3">
+          <label class="form-label" for="extra_text">Extra text (baris 2)</label>
+          <input id="extra_text" type="text" class="form-control" name="extra_text" value="{{ extra_text }}">
+        </div>
+      </div>
+
+    </div>
+    <div class="card-footer d-flex justify-content-end">
+      <button class="btn btn-success">Issue Certificates</button>
+    </div>
+  </form>
+</div>
+
+{# Recent Issues dibungkus card supaya ada padding #}
+<div class="card">
+  <div class="card-header">
+    <h5 class="mb-0">Recent Issues</h5>
+  </div>
+  <div class="card-body px-3">
+    {% if issues and issues|length %}
+    <div class="table-responsive">
+      <table class="table table-sm align-middle mb-0">
+        <thead class="thead-light">
+          <tr>
+            <th class="text-nowrap">Issued At</th>
+            <th>User</th>
+            <th>Team</th>
+            <th>Score</th>
+            <th>Rank</th>
+            <th>Criteria</th>
+            <th>SHA1</th>
+            <th class="text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for i in issues %}
+          <tr>
+            <td class="text-nowrap">{{ i.issued_at.strftime('%Y-%m-%d %H:%M:%S') if i.issued_at else '-' }}</td>
+            <td>{{ i.user_name or i.user_id }}</td>
+            <td>{{ i.team_name or '-' }}</td>
+            <td>{{ i.score }}</td>
+            <td>{{ i.rank or '-' }}</td>
+            <td>{{ i.criteria }}</td>
+            <td><code>{{ i.sha1 }}</code></td>
+            <td class="text-right">
+              <div class="d-inline-flex">
+                <a class="btn btn-primary btn-sm mr-2"
+                   href="{{ url_for('admin.admin_cert_download', issue_id=i.id) }}">Download</a>
+                <form action="{{ url_for('admin.admin_cert_delete', issue_id=i.id) }}"
+                      method="post" onsubmit="return confirm('Yakin hapus sertifikat ini?');">
+                  <input type="hidden" name="nonce" value="{{ Session.nonce }}">
+                  <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+      <div class="alert alert-secondary mb-0">Belum ada certificate yang di-issue.</div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+(function(){
+  var select = document.getElementById('bg-choice');
+  var group  = document.getElementById('bg-manual-group');
+  var manual = document.getElementById('bg-manual');
+
+  function toggleManual(){
+    var custom = select.value === '__custom__';
+    if (custom) {
+      group.classList.remove('d-none');
+      manual.disabled = false;
+    } else {
+      group.classList.add('d-none');
+      manual.disabled = true;
+    }
+  }
+
+  toggleManual(); // initial
+  select.addEventListener('change', toggleManual);
+})();
+</script>
+
+{% endblock %}

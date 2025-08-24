@@ -1,0 +1,14 @@
+#include <stdio.h>
+
+void vulnerable_function(int arg1) {
+    if (arg1 == 42) {
+        printf("Flag found!\n");
+    } else {
+        printf("Invalid argument.\n");
+    }
+}
+
+int main() {
+    vulnerable_function(0);
+    return 0;
+}

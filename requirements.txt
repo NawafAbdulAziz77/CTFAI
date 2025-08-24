@@ -189,3 +189,9 @@ zope-interface==5.2.0
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
+gevent==23.9.1
+
+prometheus-flask-exporter==0.23.1
+    # via -r requirements.in
+prometheus-client==0.21.0
+    # via prometheus-flask-exporter

@@ -10,11 +10,8 @@
 <div class="container-fluid">
   <div class="mb-4">
     <h2>Generate Soal</h2>
-
-    <!-- Tombol History -->
     <a href="{{ url_for('admin.history') }}" class="btn btn-secondary mb-3">📜 Full History</a>
 
-    <!-- Flash message -->
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         {% for category, message in messages %}
@@ -28,18 +25,59 @@
       {% endif %}
     {% endwith %}
 
-    <!-- Form -->
     <form method="POST">
       <input type="hidden" name="nonce" value="{{ session.get('nonce') }}">
+
+      <!-- Kategori -->
       <div class="form-group">
         <label for="kategori">Kategori</label>
-        <input type="text" name="kategori" id="kategori" class="form-control" required>
+        <select name="kategori" id="kategori" class="form-control">
+          <option value="">-- Pilih Kategori --</option>
+          <option value="Web">Web</option>
+          <option value="Pwn">Pwn</option>
+          <option value="Crypto">Crypto</option>
+          <option value="Reverse">Reverse</option>
+          <option value="Forensics">Forensics</option>
+          <option value="General Skills">General Skills</option>
+        </select>
       </div>
+
+      <!-- Topik -->
       <div class="form-group">
         <label for="topik">Topik</label>
-        <input type="text" name="topik" id="topik" class="form-control" required>
+        <select name="topik" id="topik" class="form-control" onchange="toggleOtherTopic(this)">
+          <option value="">-- Pilih Topik --</option>
+          <option value="Login Bypass">Login Bypass</option>
+          <option value="Buffer Overflow">Buffer Overflow</option>
+          <option value="RSA">RSA</option>
+          <option value="Steganografi">Steganografi</option>
+          <option value="Other">Other</option>
+        </select>
       </div>
-      <button type="submit" class="btn btn-primary">🚀 Generate</button>
+
+      <div class="form-group" id="other-topic-group" style="display: none;">
+        <label for="other_topic">Topik (lainnya)</label>
+        <input type="text" name="other_topic" id="other_topic" class="form-control">
+      </div>
+
+      <!-- Tingkat -->
+      <div class="form-group">
+        <label for="tingkat">Tingkat Kesulitan</label>
+        <select name="tingkat" id="tingkat" class="form-control">
+          <option value="">-- Pilih Tingkat --</option>
+          <option value="Easy">Easy</option>
+          <option value="Medium">Medium</option>
+          <option value="Hard">Hard</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+      <label for="prompt">Prompt Manual (Opsional)</label>
+      <textarea name="prompt" id="prompt" rows="4" class="form-control" placeholder="Tulis prompt manual di sini..."></textarea>
+      <small class="form-text text-muted">Jika diisi, prompt ini akan digunakan untuk menggantikan dropdown Kategori, Topik, dan Tingkat.</small>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Generate</button>
     </form>
 
     {% if output %}
@@ -57,7 +95,6 @@
     {% endif %}
   </div>
 
-  <!-- History Ringkas -->
   {% if history %}
     <hr>
     <h3>📜 History Soal Terbaru</h3>
@@ -67,8 +104,6 @@
           <strong>{{ item.kategori }}</strong> — {{ item.created_at.strftime('%Y-%m-%d %H:%M:%S') }}<br>
           {% if item.duration is not none %}
             <small class="text-muted">⏱ Waktu generate: {{ item.duration | round(2) }} detik</small><br>
-          {% else %}
-            <small class="text-muted text-warning">⏱ Waktu generate tidak tersedia</small><br>
           {% endif %}
           <pre style="white-space: pre-wrap;">{{ item.response[:500] }}{% if item.response|length > 500 %}...{% endif %}</pre>
         </li>
@@ -76,4 +111,31 @@
     </ul>
   {% endif %}
 </div>
+
+<script>
+  function toggleOtherTopic(select) {
+    const otherGroup = document.getElementById("other-topic-group");
+    if (select.value === "Other") {
+      otherGroup.style.display = "block";
+      document.getElementById("other_topic").required = true;
+    } else {
+      otherGroup.style.display = "none";
+      document.getElementById("other_topic").required = false;
+    }
+  }
+
+  // Validasi agar dropdown tidak wajib kalau prompt manual diisi
+  document.querySelector("form").addEventListener("submit", function(e) {
+    const promptManual = document.getElementById("prompt").value.trim();
+    const kategori = document.getElementById("kategori").value.trim();
+    const topik = document.getElementById("topik").value.trim();
+    const tingkat = document.getElementById("tingkat").value.trim();
+
+    if (!promptManual && (!kategori || !topik || !tingkat)) {
+      e.preventDefault();
+      alert("Isi prompt manual atau lengkapi pilihan kategori, topik, dan tingkat kesulitan.");
+    }
+  });
+</script>
+
 {% endblock %}

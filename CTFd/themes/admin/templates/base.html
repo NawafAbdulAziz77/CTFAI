@@ -73,6 +73,12 @@
 						</div>
 					</li>
 					<li class="nav-item"><a class="nav-link" href="{{ url_for('admin.generate') }}">Generate soal AI</a></li>
+					<li class="nav-item">
+					  <a class="nav-link {% if request.endpoint and request.endpoint.startswith('admin.admin_certificates') %}active{% endif %}"
+						 href="{{ url_for('admin.admin_certificates') }}">
+						Certificates
+					  </a>
+					</li>
 					<li class="nav-item"><a class="nav-link" href="{{ url_for('admin.config') }}">Config</a></li>
 
 					{% set plugin_menu = get_admin_plugin_menu_bar() %}
@@ -131,7 +137,7 @@
 		<div class="container text-center">
 			<a href="https://ctfd.io" class="text-secondary">
 				<small class="text-muted">
-					Powered by Naf
+					Powered by Nawaf Abdul Aziz
 				</small>
 			</a>
 			<span>

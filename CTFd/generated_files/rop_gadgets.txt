@@ -1,0 +1,22 @@
+0x452160: pop rax; ret
+0x452150: pop rdi; ret
+0x452140: pop rsi; ret
+0x452130: pop rdx; ret
+0x452120: pop r10; ret
+0x452110: pop r8; ret
+0x452100: pop r9; ret
+0x4520f0: pop rbp; ret
+0x4520e0: pop rbx; ret
+0x4520d0: pop r15; ret
+0x4520c0: pop r14; ret
+0x4520b0: pop r13; ret
+0x4520a0: pop r12; ret
+0x452090: pop r11; ret
+0x452080: pop r12; pop r13; ret
+0x452070: pop r14; pop r15; ret
+0x452060: pop rbp; pop rsp; pop rax; ret
+0x452050: pop rbp; pop rsp; pop rdi; pop rsi; pop rdx; ret
+0x452040: pop rbp; pop rsp; pop rdi; pop rsi; pop rdx; pop r10; ret
+0x452030: pop rbp; pop rsp; pop rdi; pop rsi; pop rdx; pop r10; pop r8; ret
+0x452020: pop rbp; pop rsp; pop rdi; pop rsi; pop rdx; pop r10; pop r8; pop r9; ret
+0x452010: pop rbp; pop rsp; pop rdi; pop rsi; pop rdx; pop r10; pop r8; pop r9; pop r12; ret

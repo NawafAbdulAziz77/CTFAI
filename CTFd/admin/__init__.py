@@ -27,6 +27,7 @@ from CTFd.admin import submissions  # noqa: F401,I001
 from CTFd.admin import teams  # noqa: F401,I001
 from CTFd.admin import users  # noqa: F401,I001
 from CTFd.admin import generator
+from CTFd.admin import generatesertif
 from CTFd.cache import (
     cache,
     clear_all_team_sessions,

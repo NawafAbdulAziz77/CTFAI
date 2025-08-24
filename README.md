@@ -179,3 +179,11 @@ docker compose up -d --build
 5. (Opsional) Restart juga nginx-proxy
 
     <h4>docker restart nginx-proxy</h4>
+
+# Cara Menganti LLM Model AI
+## Langkah 1 : Masuk Ke CTFD/admin/generator.py
+kemudian cari API_KEY DAN URL KEY masukan api deepseek atau Openrouter bebas
+
+Contoh
+<h4>API_KEY = 'sk-asadsa'</h4>
+<h4>API_URL = 'https://api'</h4>

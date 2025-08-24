@@ -7,8 +7,11 @@ SSH ke server kamu:
 # LANGKAH 2: Update Sistem dan Install Docker
 
 sudo apt update && sudo apt upgrade -y
+
 sudo apt install -y docker.io docker-compose git
+
 sudo systemctl enable docker
+
 sudo systemctl start docker
 
 Verifikasi instalasi Docker:
@@ -17,13 +20,17 @@ docker-compose --version
 
 # LANGKAH 3: Clone Repository CTFAI
 cd /home/ubuntu
+
 git clone https://github.com/NawafAbdulAziz77/CTFAI.git
+
 cd CTFAI
+
 Jika kamu mendapatkan error seperti Permission denied, jalankan:
 
 sudo chown -R ubuntu:ubuntu /home/ubuntu/CTFAI
 
-LANGKAH 4: Jalankan Docker Compose
+# LANGKAH 4: Jalankan Docker Compose
+
 Pastikan file docker-compose.yml sudah ada di repo kamu. Jalankan:
 
 sudo docker compose up -d
@@ -52,8 +59,11 @@ http://<public-ip-ec2>:8500
 # Arahkan IP Server ke Domain
 ## LANGKAH 1: Arahkan Domain ke IP AWS
 Login ke penyedia domain kamu (tempat beli domain ctfai.my.id, misal: Niagahoster, Domainesia, Cloudflare, dsb).
+
 Cari menu DNS Management / DNS Records / Kelola DNS.
+
 Tambahkan DNS record berikut:
+
 Jenis	Host/Name	Value	TTL
 A	@	13.219.244.166	default
 A	www	13.219.244.166	default
@@ -82,7 +92,6 @@ Lalu restart nginx:
 sudo docker-compose restart nginx
 
 # Buat Soal Kategori Web
-
 ## Langkah 1 buat Website Target
 
 Buat website misal HIDDEN Flag in inspect
@@ -146,4 +155,27 @@ Buat website misal HIDDEN Flag in inspect
 
 ## Langkah 2 upload pada docker 
 
+docker compose up -d --build
 
+## Langkah 3 Buat Network nginx-proxy dan hubungkan semua container
+1. Buat network nginx-proxy (atau pakai nama yang sesuai dengan VIRTUAL_HOST dari konfigurasi kamu)
+
+    <h4>docker network create nginx-proxy<h4>
+
+2. Hubungkan container nginx-proxy ke network ini
+
+    <h4>docker network connect nginx-proxy nginx-proxy</h4>
+
+    Kalau error: already connected, bisa abaikan.
+
+3. Hubungkan container soal kamu (misal soal11-easy) ke network ini juga
+
+    <h4>docker network connect nginx-proxy soal11-easy</h4>
+
+4. Restart soal11-easy
+
+    <h4>docker restart soal11-easy</h4>
+
+5. (Opsional) Restart juga nginx-proxy
+
+    <h4>docker restart nginx-proxy</h4>

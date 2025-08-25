@@ -217,45 +217,41 @@ python3
 ```aiignore
 from CTFd import create_app
 from CTFd.models import db
+app = create_app()
+with app.app_context():
+    db.create_all()
+```
 
-
-#LICENSE – CTFAI
+# LICENSE – CTFAI
 
 Copyright (c) 2025 Nawaf Abdul Aziz
 
 CTFAI adalah karya turunan berbasis CTFd dengan tambahan fitur baru (generative AI challenge creation, automated certificate generation, dsb) yang dikembangkan untuk tujuan pendidikan dan penelitian.
 
-Permissions
+1. Permissions
 
 Dengan lisensi ini, pengguna diperbolehkan untuk:
 
-Menggunakan CTFAI untuk tujuan pembelajaran, penelitian, dan non-komersial.
+- Menggunakan CTFAI untuk tujuan pembelajaran, penelitian, dan non-komersial.
+- Mengubah, memodifikasi, atau menambahkan fitur untuk kepentingan riset/pendidikan.
+- Membagikan kembali hasil modifikasi selama tetap menyertakan lisensi ini.
 
-Mengubah, memodifikasi, atau menambahkan fitur untuk kepentingan riset/pendidikan.
-
-Membagikan kembali hasil modifikasi selama tetap menyertakan lisensi ini.
-
-Restrictions
+2. Restrictions
 
 Pengguna tidak diperbolehkan untuk:
 
-Menggunakan CTFAI untuk tujuan komersial (menjual, menyewakan, menjadikannya layanan berbayar).
+- Menggunakan CTFAI untuk tujuan komersial (menjual, menyewakan, menjadikannya layanan berbayar).
+- Menghapus atau mengubah nama pencipta asli dari kode/dokumentasi.
+- Mendistribusikan ulang versi modifikasi tanpa mencantumkan lisensi yang sama (ShareAlike).
 
-Menghapus atau mengubah nama pencipta asli dari kode/dokumentasi.
-
-Mendistribusikan ulang versi modifikasi tanpa mencantumkan lisensi yang sama (ShareAlike).
-
-Attribution
+3. Attribution
 
 Setiap penggunaan CTFAI harus mencantumkan kredit kepada:
 Nawaf Abdul Aziz – Pengembang CTFAI (https://ctfai.my.id
 )
 
-Disclaimer
+4. Disclaimer
 
 CTFAI diberikan "as is", tanpa jaminan apapun. Pencipta tidak bertanggung jawab atas kerusakan, kerugian, atau penyalahgunaan yang timbul dari penggunaan perangkat lunak ini.
-app = create_app()
-with app.app_context():
-    db.create_all()
 
-```
+

@@ -23,8 +23,9 @@ class GeneratedQuestion(db.Model):
     created_at = db.Column(db.DateTime, default=db.func.now())
     duration = db.Column(db.Float)
 
-API_KEY = ''
-API_URL = ''
+
+API_KEY = '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'
+API_URL = 'https://openrouter.ai/api/v1/chat/completions'
 DATASET_PATH = os.path.join(os.path.dirname(__file__), 'dataset.csv')
 
 df_dataset = pd.read_csv(DATASET_PATH)
@@ -155,7 +156,7 @@ def admin_generate_ai():
             system_messages.append({"role": "system", "content": "Prompt sudah terstruktur. Buat soal CTF dengan format rapi dan jelas."})
 
         data = {
-            "model": "deepseek-chat",
+            "model": "google/gemma-3n-e2b-it:free",
             "messages": system_messages + [{"role": "user", "content": task_prompt}],
             "temperature": 0.15,  # lebih deterministik
             "top_p": 0.9,
